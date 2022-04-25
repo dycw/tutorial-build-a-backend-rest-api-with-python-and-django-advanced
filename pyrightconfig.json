@@ -1,9 +1,9 @@
 {
-  "include": ["src"],
+  "include": ["app"],
   "venvPath": ".direnv",
   "pythonVersion": "3.10",
   "pythonPlatform": "Linux",
-  "executionEnvironments": [{ "root": "src" }],
+  "executionEnvironments": [{ "root": "app" }],
   "typeCheckingMode": "strict",
   "reportMissingTypeStubs": false,
   "reportUnknownParameterType": false,
