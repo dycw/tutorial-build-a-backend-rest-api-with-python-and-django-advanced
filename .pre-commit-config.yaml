@@ -112,17 +112,18 @@ repos:
             --output-file=requirements.txt,
             --quiet,
             --upgrade,
+            requirements.in,
           ]
-        files: ^setup.py$
+        files: ^requirements.in$
       - id: pip-compile
         name: pip-compile (dev)
         args:
           [
             --allow-unsafe,
-            --extra=dev,
             --generate-hashes,
             --output-file=requirements-dev.txt,
             --quiet,
             --upgrade,
+            requirements-dev.in,
           ]
-        files: ^setup.py$
+        files: ^requirements-dev.in$
