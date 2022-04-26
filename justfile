@@ -1,4 +1,5 @@
 alias r := run
+alias m := manage
 alias t := test
 alias wt := watch-test
 
@@ -8,8 +9,11 @@ set positional-arguments := true
 @run *args='':
   docker-compose run app "$@"
 
-test:
-  just run python manage.py test
+@manage *args='':
+  just run python manage.py "$@"
 
-watch-test:
-  watchexec -w=app/ -- just test
+@test *args='.':
+  just manage test "$@"
+
+@watch-test *args='.':
+  watchexec -w=app/ -- just test "$@"
