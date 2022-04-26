@@ -10,7 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+from os import getenv
 from pathlib import Path
+
+from hypothesis import Verbosity
+from hypothesis import settings
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -121,4 +125,29 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
+# auth user model
+
+
 AUTH_USER_MODEL = "core.User"
+
+
+# hypothesis
+
+
+settings.register_profile(
+    "ci", deadline=None, max_examples=1000, print_blob=True
+)
+settings.register_profile(
+    "default", deadline=None, max_examples=100, print_blob=True
+)
+settings.register_profile(
+    "dev", deadline=None, max_examples=10, print_blob=True
+)
+settings.register_profile(
+    "debug",
+    deadline=None,
+    max_examples=10,
+    print_blob=True,
+    verbosity=Verbosity.verbose,
+)
+settings.load_profile(getenv("HYPOTHESIS_PROFILE", "default"))
