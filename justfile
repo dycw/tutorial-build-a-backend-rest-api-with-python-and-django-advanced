@@ -1,8 +1,15 @@
+alias r := run
 alias t := test
 alias wt := watch-test
 
+set dotenv-load := true
+set positional-arguments := true
+
+@run *args='':
+  docker-compose run app "$@"
+
 test:
-  docker-compose run app python manage.py test
+  just run python manage.py test
 
 watch-test:
-  watchexec -w=app/ -- docker-compose run app python manage.py test
+  watchexec -w=app/ -- just test
