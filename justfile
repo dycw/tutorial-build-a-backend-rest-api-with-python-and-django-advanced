@@ -19,5 +19,8 @@ build:
 @test *args='.':
   just manage test "$@"
 
+up:
+  docker-compose up
+
 @watch-test *args='.':
   watchexec -w=app/ -- just test "$@"
