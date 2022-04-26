@@ -9,7 +9,6 @@ extend-ignore =
 max-line-length = 88
 min-python-version = 3.10
 per-file-ignores =
-	app/conftest.py:INP001
 	app/manage.py:INP001
 show-source = True
 unused-arguments-ignore-variadic-names = True
