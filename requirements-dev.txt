@@ -140,9 +140,9 @@ flake8-debugger==4.0.0 \
     --hash=sha256:82e64faa72e18d1bdd0000407502ebb8ecffa7bc027c62b9d4110ce27c091032 \
     --hash=sha256:e43dc777f7db1481db473210101ec2df2bd39a45b149d7218a618e954177eda6
     # via -r requirements-dev.in
-flake8-eradicate==1.2.0 \
-    --hash=sha256:51dc660d0c1c1ed93af0f813540bbbf72ab2d3466c14e3f3bac371c618b6042f \
-    --hash=sha256:acaa1b6839ff00d284b805c432fdfa6047262bd15a5504ec945797e87b4de1fa
+flake8-eradicate==1.2.1 \
+    --hash=sha256:00d77faefb64cef18b3c1b48a004c3a2ad663aa3cf85650f422437d25ece6441 \
+    --hash=sha256:e486f8ab7e2dba3667223688e9239158fbf4ecaa88125e2283bcda81171412b7
     # via -r requirements-dev.in
 flake8-no-pep420==2.2.0 \
     --hash=sha256:a1622f03be67609b81a9e6790e7e69c310eb6fbd7bb81817f7fb91902312bc76 \
@@ -296,9 +296,14 @@ pytest==7.1.2 \
     --hash=sha256:a06a0425453864a270bc45e71f783330a7428defb4230fb5e6a731fde06ecd45
     # via
     #   -r requirements-dev.in
+    #   pytest-django
     #   pytest-forked
     #   pytest-instafail
     #   pytest-xdist
+pytest-django==4.5.2 \
+    --hash=sha256:c60834861933773109334fe5a53e83d1ef4828f2203a1d6a0fa9972f4f75ab3e \
+    --hash=sha256:d9076f759bb7c36939dbdd5ae6633c18edfc2902d1a69fdbefd2426b970ce6c2
+    # via -r requirements-dev.in
 pytest-forked==1.4.0 \
     --hash=sha256:8b67587c8f98cbbadfdd804539ed5455b6ed03802203485dd2f53c1422d7440e \
     --hash=sha256:bbbb6717efc886b9d64537b41fb1497cfaf3c9601276be8da2cccfea5a3c8ad8
@@ -416,4 +421,6 @@ pip==22.0.4 \
 setuptools==62.1.0 \
     --hash=sha256:26ead7d1f93efc0f8c804d9fafafbe4a44b179580a7105754b245155f9af05a8 \
     --hash=sha256:47c7b0c0f8fc10eec4cf1e71c6fdadf8decaa74ffa087e68cd1c20db7ad6a592
-    # via pip-tools
+    # via
+    #   flake8-eradicate
+    #   pip-tools

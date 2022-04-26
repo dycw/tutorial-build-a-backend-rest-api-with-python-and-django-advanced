@@ -28,6 +28,7 @@ flake8-unused-arguments >= 0.0.10, < 0.1
 
 # testing
 pytest >= 7.1.2, < 7.2
+pytest-django >= 4.5.2, < 4.6
 pytest-instafail >= 0.4.2, < 0.5
 pytest-xdist >= 2.5.0, < 2.6
 
