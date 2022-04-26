@@ -2,7 +2,7 @@ from typing import cast
 
 from core.models import UserManager
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from hypothesis.extra.django import TestCase
 
 
 class TestModel(TestCase):
@@ -21,3 +21,7 @@ class TestModel(TestCase):
             email=email, password="password"
         )
         self.assertEqual(user.email, email.lower())
+
+    def test_new_user_invalid_email(self) -> None:
+        with self.assertRaises(ValueError):
+            pass
