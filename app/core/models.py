@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 from typing import Any
 
+from beartype import beartype
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
@@ -12,9 +13,12 @@ from django.db.models import EmailField
 class UserManager(
     BaseUserManager["User"] if TYPE_CHECKING else BaseUserManager
 ):
+    @beartype
     def create_user(
-        self, email: str, password: str | None = None, **kwargs: Any
+        self, email: str, /, *, password: str | None = None, **kwargs: Any
     ) -> "User":
+        if email == "":
+            raise ValueError(f"{email=}")
         user = self.model(email=self.normalize_email(email), **kwargs)
         user.set_password(password)
         user.save(using=self._db)

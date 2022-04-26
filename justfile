@@ -6,10 +6,8 @@ alias wt := watch-test
 set dotenv-load := true
 set positional-arguments := true
 
-dbuild:
+build:
   docker build .
-
-dcbuild:
   docker-compose build --parallel app
 
 @run *args='':
