@@ -1,4 +1,6 @@
 [flake8]
+exclude =
+  migrations
 extend-ignore =
 	ANN101 # flake8-annotations: Missing type annotation for self in method
 	ANN102 # flake8-annotations: Missing type annotation for cls in method
