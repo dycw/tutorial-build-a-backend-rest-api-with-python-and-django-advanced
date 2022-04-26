@@ -15,12 +15,20 @@ class UserManager(
 ):
     @beartype
     def create_user(
-        self, email: str, /, *, password: str | None = None, **kwargs: Any
+        self, *, email: str, password: str | None = None, **kwargs: Any
     ) -> "User":
         if email == "":
             raise ValueError(f"{email=}")
         user = self.model(email=self.normalize_email(email), **kwargs)
         user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    @beartype
+    def create_superuser(self, *, email: str, password: str) -> "User":
+        user = self.create_user(email=email, password=password)
+        user.is_superuser = True
+        user.is_staff = True
         user.save(using=self._db)
         return user
 
