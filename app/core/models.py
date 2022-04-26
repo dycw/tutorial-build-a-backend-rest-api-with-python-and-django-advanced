@@ -15,7 +15,7 @@ class UserManager(
     def create_user(
         self, email: str, password: str | None = None, **kwargs: Any
     ) -> "User":
-        user = self.model(email=email, **kwargs)
+        user = self.model(email=self.normalize_email(email), **kwargs)
         user.set_password(password)
         user.save(using=self._db)
         return user
