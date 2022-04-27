@@ -7,12 +7,14 @@ from core.models import get_user_model_manager
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework.response import Response
+from rest_framework.status import HTTP_200_OK
 from rest_framework.status import HTTP_201_CREATED
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.test import APIClient
 
 
 CREATE_USER_URL = reverse("user:create")
+TOKEN_URL = reverse("user:token")
 
 
 def create_user(**params: Any) -> User:
@@ -42,13 +44,44 @@ class TestPublicUserAPI(TestCase):
     def test_user_exists(self) -> None:
         payload = {"email": "test@example.com", "password": "password"}
         _ = create_user(**payload)
-        res = self.client.post(CREATE_USER_URL, payload)
+        res = cast(Response, self.client.post(CREATE_USER_URL, payload))
         self.assertEqual(res.status_code, HTTP_400_BAD_REQUEST)
 
     @beartype
     def test_password_too_short(self) -> None:
         email = "test@example.com"
-        payload = {"email": email, "password": "pw"}
-        res = self.client.post(CREATE_USER_URL, payload)
+        payload = {"email": email, "password": "pw", "name": "User name"}
+        res = cast(Response, self.client.post(CREATE_USER_URL, payload))
         self.assertEqual(res.status_code, HTTP_400_BAD_REQUEST)
         self.assertFalse(get_user_model_manager().filter(email=email).exists())
+
+    @beartype
+    def test_create_token_for_user(self) -> None:
+        payload = {"email": "test@example.com", "password": "password"}
+        _ = create_user(**payload)
+        res = cast(Response, self.client.post(TOKEN_URL, payload))
+        self.assertEqual(res.status_code, HTTP_200_OK)
+        self.assertIn("token", res.data)
+
+    @beartype
+    def test_create_token_invalid_credentials(self) -> None:
+        email = "test@example.com"
+        _ = create_user(email=email, password="password")
+        payload = {"email": email, "password": "wrong_password"}
+        res = cast(Response, self.client.post(TOKEN_URL, payload))
+        self.assertEqual(res.status_code, HTTP_400_BAD_REQUEST)
+        self.assertNotIn("token", res.data)
+
+    @beartype
+    def test_create_token_no_user(self) -> None:
+        payload = {"email": "test@example.com", "password": "password"}
+        res = cast(Response, self.client.post(TOKEN_URL, payload))
+        self.assertEqual(res.status_code, HTTP_400_BAD_REQUEST)
+        self.assertNotIn("token", res.data)
+
+    @beartype
+    def test_create_token_missing_field(self) -> None:
+        payload = {"email": "test@example.com", "password": ""}
+        res = cast(Response, self.client.post(TOKEN_URL, payload))
+        self.assertEqual(res.status_code, HTTP_400_BAD_REQUEST)
+        self.assertNotIn("token", res.data)
