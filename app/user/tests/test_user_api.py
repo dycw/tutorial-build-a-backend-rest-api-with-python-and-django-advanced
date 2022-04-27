@@ -10,11 +10,14 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 from rest_framework.status import HTTP_201_CREATED
 from rest_framework.status import HTTP_400_BAD_REQUEST
+from rest_framework.status import HTTP_401_UNAUTHORIZED
+from rest_framework.status import HTTP_405_METHOD_NOT_ALLOWED
 from rest_framework.test import APIClient
 
 
 CREATE_USER_URL = reverse("user:create")
 TOKEN_URL = reverse("user:token")
+ME_URL = reverse("user:me")
 
 
 def create_user(**params: Any) -> User:
@@ -85,3 +88,42 @@ class TestPublicUserAPI(TestCase):
         res = cast(Response, self.client.post(TOKEN_URL, payload))
         self.assertEqual(res.status_code, HTTP_400_BAD_REQUEST)
         self.assertNotIn("token", res.data)
+
+    @beartype
+    def test_retrieve_user_unauthorized(self) -> None:
+        res = cast(Response, self.client.get(ME_URL))
+        self.assertEqual(res.status_code, HTTP_401_UNAUTHORIZED)
+
+
+class TestPrivateUserAPI(TestCase):
+    @beartype
+    def setUp(self) -> None:
+        self.user = create_user(
+            email="test@example.com", password="password", name="Full Name"
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    @beartype
+    def test_retrieve_profile_success(self) -> None:
+        res = cast(Response, self.client.get(ME_URL))
+        self.assertEqual(res.status_code, HTTP_200_OK)
+        self.assertEqual(
+            res.data, {"email": self.user.email, "name": self.user.name}
+        )
+
+    @beartype
+    def test_post_me_not_allowed(self) -> None:
+        res = cast(Response, self.client.post(ME_URL, {}))
+        self.assertEqual(res.status_code, HTTP_405_METHOD_NOT_ALLOWED)
+
+    @beartype
+    def test_update_user_profile(self) -> None:
+        password = "new_password"
+        name = "New Full Name"
+        payload = {"password": password, "name": name}
+        res = cast(Response, self.client.post(ME_URL, payload))
+        self.user.refresh_from_db()
+        self.assertEqual(res.status_code, HTTP_200_OK)
+        self.assertEqual(self.user.name, name)
+        self.assertTrue(self.user.check_password(password))

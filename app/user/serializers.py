@@ -1,7 +1,7 @@
 from collections import OrderedDict
-from collections.abc import Mapping
 from typing import TYPE_CHECKING
 from typing import Any
+from typing import cast
 
 from beartype import beartype
 from core.models import User
@@ -27,8 +27,19 @@ class UserSerializer(
         extra_kwargs = {"password": {"write_only": True, "min_length": 5}}
 
     @beartype
-    def create(self, validated_data: Mapping[str, Any]) -> User:
+    def create(self, validated_data: dict[str, Any]) -> User:
         return get_user_model_manager().create_user(**validated_data)
+
+    @beartype
+    def update(  # type: ignore
+        self, instance: User, validated_data: dict[str, Any]
+    ) -> User:
+        password = validated_data.pop("password", None)
+        user = cast(User, super().update(instance, validated_data))
+        if password:
+            user.set_password(password)
+            user.save()
+        return user
 
 
 class AuthTokenSerializer(Serializer[Any] if TYPE_CHECKING else Serializer):
