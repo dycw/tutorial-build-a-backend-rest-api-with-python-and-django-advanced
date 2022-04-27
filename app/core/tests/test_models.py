@@ -1,4 +1,5 @@
 from beartype import beartype
+from core.models import Tag
 from core.models import User
 from django.test import TestCase
 

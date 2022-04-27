@@ -3,13 +3,17 @@ from typing import Any
 from typing import cast
 
 from beartype import beartype
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
+from django.db.models import CASCADE
 from django.db.models import BooleanField
 from django.db.models import CharField
 from django.db.models import EmailField
+from django.db.models import ForeignKey
+from django.db.models import Model
 
 
 class UserManager(
@@ -49,3 +53,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     @beartype
     def get_objects(cls) -> UserManager:
         return cast(UserManager, get_user_model().objects)
+
+
+class Tag(Model):
+    name = CharField(max_length=255)
+    user = ForeignKey(settings.AUTH_USER_MODEL, on_delete=CASCADE)
+
+    @beartype
+    def __str__(self) -> str:
+        return self.name
