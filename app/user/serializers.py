@@ -1,25 +1,28 @@
 from collections import OrderedDict
 from typing import TYPE_CHECKING
 from typing import Any
-from typing import cast
 
 from beartype import beartype
 from core.models import User
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.serializers import CharField
 from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import Serializer
 from rest_framework.serializers import ValidationError
 
 
-_User = get_user_model()
+if TYPE_CHECKING:
+    _ModelSerializerUser = ModelSerializer[User]
+    _SerializerTokenAuth = Serializer[TokenAuthentication]
+else:
+    _ModelSerializerUser = ModelSerializer
+    _SerializerTokenAuth = Serializer
 
 
-class UserSerializer(
-    ModelSerializer[_User] if TYPE_CHECKING else ModelSerializer
-):
+class UserSerializer(_ModelSerializerUser):
     class Meta:  # type: ignore
         model = get_user_model()
         fields = ["email", "password", "name"]
@@ -30,18 +33,16 @@ class UserSerializer(
         return User.get_objects().create_user(**validated_data)
 
     @beartype
-    def update(  # type: ignore
-        self, instance: User, validated_data: dict[str, Any]
-    ) -> User:
+    def update(self, instance: User, validated_data: dict[str, Any]) -> User:
         password = validated_data.pop("password", None)
-        user = cast(User, super().update(instance, validated_data))
+        user = super().update(instance, validated_data)
         if password:
             user.set_password(password)
             user.save()
         return user
 
 
-class AuthTokenSerializer(Serializer[Any] if TYPE_CHECKING else Serializer):
+class AuthTokenSerializer(_SerializerTokenAuth):
     email = CharField()
     password = CharField(
         style={"input_type": "password"}, trim_whitespace=False

@@ -8,7 +8,7 @@ from django.db.utils import OperationalError
 
 
 class Command(BaseCommand):
-    def handle(self, *_args: Any, **_kwargs: Any) -> str | None:
+    def handle(self, *_args: Any, **_kwargs: Any) -> None:
         self.stdout.write("Waiting for database...")
         db_conn: BaseDatabaseWrapper | None = None
         while db_conn is None:
