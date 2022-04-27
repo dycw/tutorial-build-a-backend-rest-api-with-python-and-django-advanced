@@ -1,7 +1,9 @@
 from typing import TYPE_CHECKING
 from typing import Any
+from typing import cast
 
 from beartype import beartype
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
@@ -42,3 +44,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = "email"
+
+
+def get_user_model_manager() -> UserManager:
+    return cast(UserManager, get_user_model().objects)
