@@ -45,6 +45,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = "email"
 
-
-def get_user_model_manager() -> UserManager:
-    return cast(UserManager, get_user_model().objects)
+    @classmethod
+    @beartype
+    def get_objects(cls) -> UserManager:
+        return cast(UserManager, get_user_model().objects)

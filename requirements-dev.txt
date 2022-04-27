@@ -473,13 +473,13 @@ tomli==2.0.1 \
     #   mypy
     #   pep517
     #   pytest
-types-markdown==3.3.13 \
-    --hash=sha256:35711d58243172b81a6bed4148005f1bd9661f7df9d636e281e5810180f391e8 \
-    --hash=sha256:43a4b5392084124621766e3c17732b1a26c4b6a044bb5f75aa257c0b1be2b431
+types-markdown==3.3.14 \
+    --hash=sha256:10841332581bd79efdb153fb8f856818ef5cdb40a6e71e5d18505b5db6eba01c \
+    --hash=sha256:49a406c12be2181346a756086f326d42d5bb3abbfaede8942ccdc9cef367db1f
     # via djangorestframework-stubs
-types-pytz==2021.3.6 \
-    --hash=sha256:6805c72d51118923c5bf98633c39593d5b464d2ab49a803440e2d7ab6b8920df \
-    --hash=sha256:74547fd90d8d8ab4f1eedf3a344a7d186d97486973895f81221a712e1e2cd993
+types-pytz==2021.3.7 \
+    --hash=sha256:0f67528c1df2017b61a45f2f9cfa2d45b16ce1dc135f09c7d2fd258998aade58 \
+    --hash=sha256:11d5ba06268167953ccc4a3eee192c24b42d00d2aef456c160a8798893cb2081
     # via django-stubs
 types-pyyaml==6.0.7 \
     --hash=sha256:59480cf44595d836aaae050f35e3c39f197f3a833679ef3978d97aa9f2fb7def \
@@ -487,9 +487,9 @@ types-pyyaml==6.0.7 \
     # via
     #   django-stubs
     #   djangorestframework-stubs
-types-requests==2.27.20 \
-    --hash=sha256:63344573cde6c4efd44d867c0158d9fb7e6beb95721cbe9882f3f857ee8a5398 \
-    --hash=sha256:68b8de86552116424ec23b77afc925e111afb6496d3821b183b7d151b3b834d4
+types-requests==2.27.21 \
+    --hash=sha256:acc1ba53fa9e209b6cda9fddf411cb6e062e5ce31c8886543edd9b980026c74a \
+    --hash=sha256:bfe9190c15743f5a7f11a6d93fe700d5e9e164a4c6ef43ac3e7e582ac3deebb4
     # via djangorestframework-stubs
 types-urllib3==1.26.13 \
     --hash=sha256:40f8fb5e8cd7d57e8aefdee3fdd5e930aa1a1bb4179cdadd55226cea588af790 \

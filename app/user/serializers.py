@@ -5,7 +5,6 @@ from typing import cast
 
 from beartype import beartype
 from core.models import User
-from core.models import get_user_model_manager
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy
@@ -28,7 +27,7 @@ class UserSerializer(
 
     @beartype
     def create(self, validated_data: dict[str, Any]) -> User:
-        return get_user_model_manager().create_user(**validated_data)
+        return User.get_objects().create_user(**validated_data)
 
     @beartype
     def update(  # type: ignore

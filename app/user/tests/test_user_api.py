@@ -3,7 +3,6 @@ from typing import cast
 
 from beartype import beartype
 from core.models import User
-from core.models import get_user_model_manager
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework.response import Response
@@ -21,7 +20,7 @@ ME_URL = reverse("user:me")
 
 
 def create_user(**params: Any) -> User:
-    return get_user_model_manager().create_user(**params)
+    return User.get_objects().create_user(**params)
 
 
 class TestPublicUserAPI(TestCase):
@@ -39,7 +38,7 @@ class TestPublicUserAPI(TestCase):
         }
         res = cast(Response, self.client.post(CREATE_USER_URL, payload))
         self.assertEqual(res.status_code, HTTP_201_CREATED)
-        user = get_user_model_manager().get(**res.data)
+        user = User.get_objects().get(**res.data)
         self.assertTrue(user.check_password(password))
         self.assertNotIn(password, res.data)
 
@@ -56,7 +55,7 @@ class TestPublicUserAPI(TestCase):
         payload = {"email": email, "password": "pw", "name": "User name"}
         res = cast(Response, self.client.post(CREATE_USER_URL, payload))
         self.assertEqual(res.status_code, HTTP_400_BAD_REQUEST)
-        self.assertFalse(get_user_model_manager().filter(email=email).exists())
+        self.assertFalse(User.get_objects().filter(email=email).exists())
 
     @beartype
     def test_create_token_for_user(self) -> None:
@@ -122,7 +121,7 @@ class TestPrivateUserAPI(TestCase):
         password = "new_password"
         name = "New Full Name"
         payload = {"password": password, "name": name}
-        res = cast(Response, self.client.post(ME_URL, payload))
+        res = cast(Response, self.client.patch(ME_URL, payload))
         self.user.refresh_from_db()
         self.assertEqual(res.status_code, HTTP_200_OK)
         self.assertEqual(self.user.name, name)
