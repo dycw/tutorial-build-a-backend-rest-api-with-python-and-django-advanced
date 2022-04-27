@@ -14,11 +14,11 @@ class TestAdminSite(TestCase):
     def setUp(self) -> None:
         self.client = Client()
         self.manager = cast(UserManager, get_user_model().objects)
-        self.admin_user = self.manager.create_superuser(  # noqa: S106
+        self.admin_user = self.manager.create_superuser(
             email="admin@example.com", password="password"
         )
         self.client.force_login(self.admin_user)
-        self.user = self.manager.create_user(  # noqa: S106
+        self.user = self.manager.create_user(
             email="test@example.com", password="password", name="Full name"
         )
 

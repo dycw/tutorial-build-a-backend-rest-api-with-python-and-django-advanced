@@ -10,5 +10,6 @@ max-line-length = 88
 min-python-version = 3.10
 per-file-ignores =
 	app/manage.py:INP001
+	test_*.py:S105,S106
 show-source = True
 unused-arguments-ignore-variadic-names = True
