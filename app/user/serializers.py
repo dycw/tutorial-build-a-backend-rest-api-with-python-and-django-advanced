@@ -1,7 +1,7 @@
+from collections import OrderedDict
 from collections.abc import Mapping
 from typing import TYPE_CHECKING
 from typing import Any
-from typing import OrderedDict
 
 from beartype import beartype
 from core.models import User
