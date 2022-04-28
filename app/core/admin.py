@@ -1,3 +1,4 @@
+from core.models import Tag
 from core.models import User
 from django.contrib.admin import site
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
@@ -28,3 +29,4 @@ class UserAdmin(BaseUserAdmin):
 
 
 site.register(User, UserAdmin)
+site.register(Tag)

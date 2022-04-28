@@ -3,18 +3,26 @@ from typing import Any
 from typing import cast
 
 from beartype import beartype
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
+from django.db.models import CASCADE
 from django.db.models import BooleanField
 from django.db.models import CharField
 from django.db.models import EmailField
+from django.db.models import ForeignKey
+from django.db.models import Model
 
 
-class UserManager(
-    BaseUserManager["User"] if TYPE_CHECKING else BaseUserManager
-):
+if TYPE_CHECKING:
+    _BaseUserManagerUser = BaseUserManager["User"]
+else:
+    _BaseUserManagerUser = BaseUserManager
+
+
+class UserManager(_BaseUserManagerUser):
     @beartype
     def create_user(
         self, *, email: str, password: str | None = None, **kwargs: Any
@@ -36,15 +44,25 @@ class UserManager(
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    email = EmailField(max_length=255, unique=True)
-    name = CharField(max_length=255)
-    is_active = BooleanField(default=True)
-    is_staff = BooleanField(default=False)
+    email = cast(str, EmailField(max_length=255, unique=True))
+    name = cast(str, CharField(max_length=255))
+    is_active = cast(bool, BooleanField(default=True))
+    is_staff = cast(bool, BooleanField(default=False))
 
     objects = UserManager()
 
     USERNAME_FIELD = "email"
 
+    @classmethod
+    @beartype
+    def get_objects(cls) -> UserManager:
+        return cast(UserManager, get_user_model().objects)
 
-def get_user_model_manager() -> UserManager:
-    return cast(UserManager, get_user_model().objects)
+
+class Tag(Model):
+    name = cast(str, CharField(max_length=255))
+    user = cast(User, ForeignKey(settings.AUTH_USER_MODEL, on_delete=CASCADE))
+
+    @beartype
+    def __str__(self) -> str:
+        return self.name

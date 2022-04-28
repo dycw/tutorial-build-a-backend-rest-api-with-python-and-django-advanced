@@ -5,3 +5,4 @@ psycopg2 >= 2.9.3, < 2.10
 
 # testing
 hypothesis >= 6.45.0, < 6.46
+tblib >= 1.7.0, < 1.8
