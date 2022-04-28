@@ -8,6 +8,8 @@ from django.urls import reverse
 from recipe.serializers import TagSerializer
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
+from rest_framework.status import HTTP_201_CREATED
+from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.status import HTTP_401_UNAUTHORIZED
 from rest_framework.test import APIClient
 
@@ -61,6 +63,13 @@ class TestPrivateTagsAPI(TestCase):
     def test_create_tag_successful(self) -> None:
         name = "Test tag"
         payload = {"name": name}
-        _ = self.client.post(TAGS_URL, payload)
+        res = self.client.post(TAGS_URL, payload)
         exists = Tag.objects.filter(user=self.user, name=name).exists()
+        self.assertEqual(res.status_code, HTTP_201_CREATED)
         self.assertTrue(exists)
+
+    @beartype
+    def test_create_tag_invalid(self) -> None:
+        payload = {"name": ""}
+        res = self.client.post(TAGS_URL, payload)
+        self.assertEqual(res.status_code, HTTP_400_BAD_REQUEST)
