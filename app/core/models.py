@@ -1,3 +1,5 @@
+import uuid
+from pathlib import Path
 from typing import Any
 
 from beartype import beartype
@@ -11,9 +13,16 @@ from django.db.models import CharField
 from django.db.models import DecimalField
 from django.db.models import EmailField
 from django.db.models import ForeignKey
+from django.db.models import ImageField
 from django.db.models import IntegerField
 from django.db.models import ManyToManyField
 from django.db.models import Model
+
+
+@beartype
+def recipe_image_file_path(_: Any, filename: str) -> str:
+    path = Path(filename)
+    return Path("uploads", "recipe", f"{uuid.uuid4()}{path.suffix}").as_posix()
 
 
 class UserManager(BaseUserManager):
@@ -74,6 +83,7 @@ class Recipe(Model):
     link = CharField(max_length=255, blank=True)
     ingredients = ManyToManyField("Ingredient")
     tags = ManyToManyField("Tag")
+    image = ImageField(null=True, upload_to=recipe_image_file_path)
 
     @beartype
     def __str__(self) -> str:

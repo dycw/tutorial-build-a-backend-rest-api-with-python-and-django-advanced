@@ -1,4 +1,6 @@
 from typing import cast
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 from beartype import beartype
 from core.models import Ingredient
@@ -6,6 +8,7 @@ from core.models import Recipe
 from core.models import Tag
 from core.models import User
 from core.models import UserManager
+from core.models import recipe_image_file_path
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
@@ -74,3 +77,12 @@ class TestModel(TestCase):
             price=5.00,
         )
         self.assertEqual(str(recipe), recipe.title)
+
+    @patch("uuid.uuid4")
+    @beartype
+    def test_recipe_file_name_uuid(self, mock_uuid: MagicMock) -> None:
+        uuid = "test-uuid"
+        mock_uuid.return_value = uuid
+        file_path = recipe_image_file_path(None, "myimage.jpg")
+        exp_path = f"uploads/recipe/{uuid}.jpg"
+        self.assertEqual(file_path, exp_path)
