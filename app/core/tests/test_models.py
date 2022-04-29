@@ -2,6 +2,7 @@ from typing import cast
 
 from beartype import beartype
 from core.models import Ingredient
+from core.models import Recipe
 from core.models import Tag
 from core.models import User
 from core.models import UserManager
@@ -63,3 +64,10 @@ class TestModel(TestCase):
             user=sample_user(), name="Cucumber"
         )
         self.assertEqual(str(ingredient), ingredient.name)
+
+    @beartype
+    def test_recipe_str(self) -> None:
+        recipe = Recipe.objects.create(
+            user=sample_user(), title="Steak and mushroom sauce", time_minutes=5
+        )
+        self.assertEqual(str(recipe), recipe.title)
