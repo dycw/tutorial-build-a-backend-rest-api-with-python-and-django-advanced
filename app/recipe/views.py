@@ -10,42 +10,32 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.mixins import CreateModelMixin
 from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.serializers import ModelSerializer
 from rest_framework.viewsets import GenericViewSet
 
 
-class TagViewSet(GenericViewSet, ListModelMixin, CreateModelMixin):
+class BaseRecipeAttrViewSet(GenericViewSet, ListModelMixin, CreateModelMixin):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-    queryset = cast(QuerySet[Tag], Tag.objects.all())
+
+    @beartype
+    def get_queryset(self) -> QuerySet:
+        return (
+            cast(QuerySet, self.queryset)
+            .filter(user=self.request.user)
+            .order_by("-name")
+        )
+
+    @beartype
+    def perform_create(self, serializer: ModelSerializer) -> None:  # type: ignore
+        _ = serializer.save(user=self.request.user)
+
+
+class TagViewSet(BaseRecipeAttrViewSet):
+    queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
-    @beartype
-    def get_queryset(self) -> QuerySet[Tag]:
-        return (
-            cast(QuerySet[Tag], self.queryset)
-            .filter(user=self.request.user)
-            .order_by("-name")
-        )
 
-    @beartype
-    def perform_create(self, serializer: TagSerializer) -> None:  # type: ignore
-        _ = serializer.save(user=self.request.user)
-
-
-class IngredientViewSet(GenericViewSet, ListModelMixin, CreateModelMixin):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-    queryset = cast(QuerySet[Ingredient], Ingredient.objects.all())
+class IngredientViewSet(BaseRecipeAttrViewSet):
+    queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-
-    @beartype
-    def get_queryset(self) -> QuerySet[Ingredient]:
-        return (
-            cast(QuerySet[Ingredient], self.queryset)
-            .filter(user=self.request.user)
-            .order_by("-name")
-        )
-
-    @beartype
-    def perform_create(self, serializer: IngredientSerializer) -> None:  # type: ignore
-        _ = serializer.save(user=self.request.user)

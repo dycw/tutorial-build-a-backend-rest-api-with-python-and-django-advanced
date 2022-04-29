@@ -1,5 +1,4 @@
 from collections import OrderedDict
-from typing import TYPE_CHECKING
 from typing import Any
 from typing import cast
 
@@ -9,22 +8,13 @@ from core.models import UserManager
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.serializers import CharField
 from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import Serializer
 from rest_framework.serializers import ValidationError
 
 
-if TYPE_CHECKING:
-    _ModelSerializerUser = ModelSerializer[User]
-    _SerializerTokenAuth = Serializer[TokenAuthentication]
-else:
-    _ModelSerializerUser = ModelSerializer
-    _SerializerTokenAuth = Serializer
-
-
-class UserSerializer(_ModelSerializerUser):
+class UserSerializer(ModelSerializer):
     class Meta:  # type: ignore
         model = get_user_model()
         fields = ["email", "password", "name"]
@@ -46,7 +36,7 @@ class UserSerializer(_ModelSerializerUser):
         return user
 
 
-class AuthTokenSerializer(_SerializerTokenAuth):
+class AuthTokenSerializer(Serializer):
     email = CharField()
     password = CharField(
         style={"input_type": "password"}, trim_whitespace=False

@@ -1,4 +1,3 @@
-from typing import TYPE_CHECKING
 from typing import Any
 from typing import cast
 
@@ -15,13 +14,7 @@ from django.db.models import ForeignKey
 from django.db.models import Model
 
 
-if TYPE_CHECKING:
-    _BaseUserManagerUser = BaseUserManager["User"]
-else:
-    _BaseUserManagerUser = BaseUserManager
-
-
-class UserManager(_BaseUserManagerUser):
+class UserManager(BaseUserManager):
     @beartype
     def create_user(
         self, *, email: str, password: str | None = None, **kwargs: Any
