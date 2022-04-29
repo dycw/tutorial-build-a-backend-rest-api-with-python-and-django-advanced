@@ -5,6 +5,7 @@
   "pythonPlatform": "Linux",
   "executionEnvironments": [{ "root": "app" }],
   "typeCheckingMode": "strict",
+  "reportMissingTypeArgument": false,
   "reportMissingTypeStubs": false,
   "reportUnknownParameterType": false,
   "reportUnknownArgumentType": false,

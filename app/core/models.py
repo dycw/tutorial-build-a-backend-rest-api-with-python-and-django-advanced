@@ -1,10 +1,8 @@
-from typing import TYPE_CHECKING
 from typing import Any
 from typing import cast
 
 from beartype import beartype
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
@@ -16,13 +14,7 @@ from django.db.models import ForeignKey
 from django.db.models import Model
 
 
-if TYPE_CHECKING:
-    _BaseUserManagerUser = BaseUserManager["User"]
-else:
-    _BaseUserManagerUser = BaseUserManager
-
-
-class UserManager(_BaseUserManagerUser):
+class UserManager(BaseUserManager):
     @beartype
     def create_user(
         self, *, email: str, password: str | None = None, **kwargs: Any
@@ -53,13 +45,17 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = "email"
 
-    @classmethod
-    @beartype
-    def get_objects(cls) -> UserManager:
-        return cast(UserManager, get_user_model().objects)
-
 
 class Tag(Model):
+    name = cast(str, CharField(max_length=255))
+    user = cast(User, ForeignKey(settings.AUTH_USER_MODEL, on_delete=CASCADE))
+
+    @beartype
+    def __str__(self) -> str:
+        return self.name
+
+
+class Ingredient(Model):
     name = cast(str, CharField(max_length=255))
     user = cast(User, ForeignKey(settings.AUTH_USER_MODEL, on_delete=CASCADE))
 

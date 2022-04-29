@@ -1,3 +1,4 @@
+from core.models import Ingredient
 from core.models import Tag
 from core.models import User
 from django.contrib.admin import site
@@ -30,3 +31,4 @@ class UserAdmin(BaseUserAdmin):
 
 site.register(User, UserAdmin)
 site.register(Tag)
+site.register(Ingredient)

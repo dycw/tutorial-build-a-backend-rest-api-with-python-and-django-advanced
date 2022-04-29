@@ -1,12 +1,12 @@
 from typing import cast
 
 from beartype import beartype
-from core.models import Tag
+from core.models import Ingredient
 from core.models import UserManager
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
-from recipe.serializers import TagSerializer
+from recipe.serializers import IngredientSerializer
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 from rest_framework.status import HTTP_201_CREATED
@@ -15,61 +15,63 @@ from rest_framework.status import HTTP_401_UNAUTHORIZED
 from rest_framework.test import APIClient
 
 
-TAGS_URL = reverse("recipe:tag-list")
+INGREDIENTS_URL = reverse("recipe:ingredient-list")
 
 
-class TestPublicTagsAPI(TestCase):
+class TestPublicIngredientsAPI(TestCase):
     @beartype
     def setUp(self) -> None:
         self.client = APIClient()
 
     @beartype
     def test_login_required(self) -> None:
-        res = cast(Response, self.client.get(TAGS_URL))
+        res = self.client.get(INGREDIENTS_URL)
         self.assertEqual(res.status_code, HTTP_401_UNAUTHORIZED)
 
 
-class TestPrivateTagsAPI(TestCase):
+class TestPrivateIngredientsAPI(TestCase):
     @beartype
     def setUp(self) -> None:
+        self.client = APIClient()
         self.user = cast(UserManager, get_user_model().objects).create_user(
             email="test@example.com", password="password"
         )
-        self.client = APIClient()
         self.client.force_authenticate(self.user)
 
     @beartype
-    def test_retrieve_tags(self) -> None:
-        Tag.objects.create(user=self.user, name="Vegan")
-        Tag.objects.create(user=self.user, name="Dessert")
-        res = cast(Response, self.client.get(TAGS_URL))
-        tags = Tag.objects.all().order_by("-name")
-        serializer = TagSerializer(tags, many=True)
+    def test_retrieve_ingredient_list(self) -> None:
+        Ingredient.objects.create(user=self.user, name="Kale")
+        Ingredient.objects.create(user=self.user, name="Salt")
+        res = cast(Response, self.client.get(INGREDIENTS_URL))
+        ingredients = Ingredient.objects.all().order_by("-name")
         self.assertEqual(res.status_code, HTTP_200_OK)
+        serializer = IngredientSerializer(ingredients, many=True)
         self.assertEqual(res.data, serializer.data)
 
     @beartype
-    def test_tags_limited_to_user(self) -> None:
-        tag = Tag.objects.create(user=self.user, name="Comfort Food")
+    def test_ingredients_limited_to_user(self) -> None:
+        ingredient = Ingredient.objects.create(user=self.user, name="Tumeric")
         user2 = cast(UserManager, get_user_model().objects).create_user(
             email="other@example.com", password="password"
         )
-        _ = Tag.objects.create(user=user2, name="Fruity")
-        res = cast(Response, self.client.get(TAGS_URL))
+        _ = Ingredient.objects.create(user=user2, name="Vinegar")
+        res = cast(Response, self.client.get(INGREDIENTS_URL))
         self.assertEqual(res.status_code, HTTP_200_OK)
         self.assertEqual(len(res.data), 1)
-        self.assertEqual(res.data[0]["name"], tag.name)
+        self.assertEqual(res.data[0]["name"], ingredient.name)
 
     @beartype
-    def test_create_tag_successful(self) -> None:
-        name = "Test tag"
+    def test_create_ingredient_successful(self) -> None:
+        name = "Cabbage"
         payload = {"name": name}
-        res = self.client.post(TAGS_URL, payload)
+        res = self.client.post(INGREDIENTS_URL, payload)
         self.assertEqual(res.status_code, HTTP_201_CREATED)
-        self.assertTrue(Tag.objects.filter(user=self.user, name=name).exists())
+        self.assertTrue(
+            Ingredient.objects.filter(user=self.user, name=name).exists()
+        )
 
     @beartype
-    def test_create_tag_invalid(self) -> None:
+    def test_create_ingredient_invalid(self) -> None:
         payload = {"name": ""}
-        res = self.client.post(TAGS_URL, payload)
+        res = self.client.post(INGREDIENTS_URL, payload)
         self.assertEqual(res.status_code, HTTP_400_BAD_REQUEST)
