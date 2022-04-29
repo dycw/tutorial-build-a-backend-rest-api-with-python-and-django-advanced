@@ -65,9 +65,8 @@ class TestPrivateTagsAPI(TestCase):
         name = "Test tag"
         payload = {"name": name}
         res = self.client.post(TAGS_URL, payload)
-        exists = Tag.objects.filter(user=self.user, name=name).exists()
         self.assertEqual(res.status_code, HTTP_201_CREATED)
-        self.assertTrue(exists)
+        self.assertTrue(Tag.objects.filter(user=self.user, name=name).exists())
 
     @beartype
     def test_create_tag_invalid(self) -> None:

@@ -45,3 +45,7 @@ class IngredientViewSet(GenericViewSet, ListModelMixin, CreateModelMixin):
             .filter(user=self.request.user)
             .order_by("-name")
         )
+
+    @beartype
+    def perform_create(self, serializer: IngredientSerializer) -> None:  # type: ignore
+        _ = serializer.save(user=self.request.user)

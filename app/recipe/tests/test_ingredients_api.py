@@ -9,6 +9,8 @@ from django.urls import reverse
 from recipe.serializers import IngredientSerializer
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
+from rest_framework.status import HTTP_201_CREATED
+from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.status import HTTP_401_UNAUTHORIZED
 from rest_framework.test import APIClient
 
@@ -57,3 +59,19 @@ class TestPrivateIngredientsAPI(TestCase):
         self.assertEqual(res.status_code, HTTP_200_OK)
         self.assertEqual(len(res.data), 1)
         self.assertEqual(res.data[0]["name"], ingredient.name)
+
+    @beartype
+    def test_create_ingredient_successful(self) -> None:
+        name = "Cabbage"
+        payload = {"name": name}
+        res = self.client.post(INGREDIENTS_URL, payload)
+        self.assertEqual(res.status_code, HTTP_201_CREATED)
+        self.assertTrue(
+            Ingredient.objects.filter(user=self.user, name=name).exists()
+        )
+
+    @beartype
+    def test_create_ingredient_invalid(self) -> None:
+        payload = {"name": ""}
+        res = self.client.post(INGREDIENTS_URL, payload)
+        self.assertEqual(res.status_code, HTTP_400_BAD_REQUEST)
