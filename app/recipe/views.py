@@ -6,6 +6,7 @@ from core.models import Recipe
 from core.models import Tag
 from django.db.models.query import QuerySet
 from recipe.serializers import IngredientSerializer
+from recipe.serializers import RecipeDetailSerializer
 from recipe.serializers import RecipeSerializer
 from recipe.serializers import TagSerializer
 from rest_framework.authentication import TokenAuthentication
@@ -13,6 +14,7 @@ from rest_framework.mixins import CreateModelMixin
 from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import Serializer
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.viewsets import ModelViewSet
 
@@ -53,3 +55,14 @@ class RecipeViewSet(ModelViewSet):
     @beartype
     def get_queryset(self) -> QuerySet:
         return cast(QuerySet, self.queryset).filter(user=self.request.user)
+
+    @beartype
+    def get_serializer_class(self) -> type[Serializer]:
+        if self.action == "retrieve":
+            return RecipeDetailSerializer
+        else:
+            return cast(type[Serializer], self.serializer_class)
+
+    @beartype
+    def perform_create(self, serializer: RecipeSerializer) -> None:  # type: ignore
+        _ = serializer.save(user=self.request.user)
