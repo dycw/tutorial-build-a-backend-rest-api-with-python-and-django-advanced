@@ -69,7 +69,7 @@ class Ingredient(Model):
 class Recipe(Model):
     user = ForeignKey(settings.AUTH_USER_MODEL, on_delete=CASCADE)
     title = CharField(max_length=255)
-    minutes = IntegerField()
+    time_minutes = IntegerField()
     price = DecimalField(max_digits=5, decimal_places=2)
     link = CharField(max_length=255, blank=True)
     ingredients = ManyToManyField("Ingredient")
