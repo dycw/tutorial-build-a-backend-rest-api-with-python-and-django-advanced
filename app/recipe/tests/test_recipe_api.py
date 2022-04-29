@@ -1,5 +1,8 @@
+from pathlib import Path
+from tempfile import NamedTemporaryFile
 from typing import cast
 
+from PIL import Image
 from beartype import beartype
 from core.models import Ingredient
 from core.models import Recipe
@@ -14,12 +17,18 @@ from recipe.serializers import RecipeSerializer
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 from rest_framework.status import HTTP_201_CREATED
+from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.status import HTTP_401_UNAUTHORIZED
 from rest_framework.test import APIClient
 
 
 RECIPES_URL = reverse("recipe:recipe-list")
 # /api/recipe/recipes/
+
+
+@beartype
+def image_upload_url(pk: int) -> str:
+    return reverse("recipe:recipe-upload-image", args=[pk])
 
 
 @beartype
@@ -189,3 +198,43 @@ class TestPrivateRecipesAPI(TestCase):
         self.assertEqual(recipe.price, price)
         tags = recipe.tags.all()
         self.assertEqual(len(tags), 0)
+
+
+class TestRecipeImageUpload(TestCase):
+    @beartype
+    def setUp(self) -> None:
+        self.client = APIClient()
+        self.user = cast(UserManager, get_user_model().objects).create_user(
+            email="test@example.com", password="password"
+        )
+        self.client.force_authenticate(self.user)
+        self.recipe = sample_recipe(user=self.user)
+
+    @beartype
+    def tearDown(self) -> None:
+        self.recipe.image.delete()
+
+    @beartype
+    def test_upload_image_to_recipe(self) -> None:
+        url = image_upload_url(self.recipe.pk)
+        with NamedTemporaryFile(suffix=".jpg") as ntf:
+            img = Image.new("RGB", (10, 10))
+            img.save(ntf, format="JPEG")
+            _ = ntf.seek(0)
+            res = cast(
+                Response,
+                self.client.post(url, {"image": ntf}, format="multipart"),
+            )
+        self.recipe.refresh_from_db()
+        self.assertEqual(res.status_code, HTTP_200_OK)
+        self.assertIn("image", res.data)
+        self.assertTrue(Path(self.recipe.image.path).exists())
+
+    @beartype
+    def test_upload_image_bad_request(self) -> None:
+        url = image_upload_url(self.recipe.pk)
+        res = cast(
+            Response,
+            self.client.post(url, {"image": "notimage"}, format="multipart"),
+        )
+        self.assertEqual(res.status_code, HTTP_400_BAD_REQUEST)
