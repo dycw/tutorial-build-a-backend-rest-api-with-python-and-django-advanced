@@ -1,7 +1,7 @@
 from contextlib import suppress
 
 
-__version__ = "0.0.12"
+__version__ = "0.0.13"
 
 
 with suppress(ModuleNotFoundError):
