@@ -58,7 +58,6 @@ class TestPrivateRecipesAPI(TestCase):
     @beartype
     def test_retrieve_recipe_list(self) -> None:
         _ = sample_recipe(user=self.user)
-        _ = sample_recipe(user=self.user)
         res = cast(Response, self.client.get(RECIPES_URL))
         recipes = Recipe.objects.all().order_by("-id")
         self.assertEqual(res.status_code, HTTP_200_OK)
@@ -67,11 +66,11 @@ class TestPrivateRecipesAPI(TestCase):
 
     @beartype
     def test_recipes_limited_to_user(self) -> None:
-        _ = sample_recipe(user=self.user)
+        _ = sample_recipe(user=self.user, title="Sample recipe 1")
         user2 = cast(UserManager, get_user_model().objects).create_user(
             email="other@example.com", password="password"
         )
-        _ = sample_recipe(user=user2)
+        _ = sample_recipe(user=user2, title="Sample recipe 2")
         res = cast(Response, self.client.get(RECIPES_URL))
         self.assertEqual(res.status_code, HTTP_200_OK)
         self.assertEqual(len(res.data), 1)
