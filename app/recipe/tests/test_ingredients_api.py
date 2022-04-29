@@ -50,7 +50,7 @@ class TestPrivateIngredientsAPI(TestCase):
 
     @beartype
     def test_ingredients_limited_to_user(self) -> None:
-        ingredient = Ingredient.objects.create(user=self.user, name="Tumeric")
+        Ingredient.objects.create(user=self.user, name="Tumeric")
         user2 = cast(UserManager, get_user_model().objects).create_user(
             email="other@example.com", password="password"
         )
@@ -58,7 +58,9 @@ class TestPrivateIngredientsAPI(TestCase):
         res = cast(Response, self.client.get(INGREDIENTS_URL))
         self.assertEqual(res.status_code, HTTP_200_OK)
         self.assertEqual(len(res.data), 1)
-        self.assertEqual(res.data[0]["name"], ingredient.name)
+        ingredients = Ingredient.objects.filter(user=self.user)
+        serializer = IngredientSerializer(ingredients, many=True)
+        self.assertEqual(res.data, serializer.data)
 
     @beartype
     def test_create_ingredient_successful(self) -> None:

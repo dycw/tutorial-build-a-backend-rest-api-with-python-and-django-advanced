@@ -1,5 +1,4 @@
 from typing import Any
-from typing import cast
 
 from beartype import beartype
 from django.conf import settings
@@ -9,8 +8,11 @@ from django.contrib.auth.models import PermissionsMixin
 from django.db.models import CASCADE
 from django.db.models import BooleanField
 from django.db.models import CharField
+from django.db.models import DecimalField
 from django.db.models import EmailField
 from django.db.models import ForeignKey
+from django.db.models import IntegerField
+from django.db.models import ManyToManyField
 from django.db.models import Model
 
 
@@ -36,10 +38,10 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    email = cast(str, EmailField(max_length=255, unique=True))
-    name = cast(str, CharField(max_length=255))
-    is_active = cast(bool, BooleanField(default=True))
-    is_staff = cast(bool, BooleanField(default=False))
+    email = EmailField(max_length=255, unique=True)
+    name = CharField(max_length=255)
+    is_active = BooleanField(default=True)
+    is_staff = BooleanField(default=False)
 
     objects = UserManager()
 
@@ -47,8 +49,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Tag(Model):
-    name = cast(str, CharField(max_length=255))
-    user = cast(User, ForeignKey(settings.AUTH_USER_MODEL, on_delete=CASCADE))
+    name = CharField(max_length=255)
+    user = ForeignKey(settings.AUTH_USER_MODEL, on_delete=CASCADE)
 
     @beartype
     def __str__(self) -> str:
@@ -56,9 +58,23 @@ class Tag(Model):
 
 
 class Ingredient(Model):
-    name = cast(str, CharField(max_length=255))
-    user = cast(User, ForeignKey(settings.AUTH_USER_MODEL, on_delete=CASCADE))
+    name = CharField(max_length=255)
+    user = ForeignKey(settings.AUTH_USER_MODEL, on_delete=CASCADE)
 
     @beartype
     def __str__(self) -> str:
         return self.name
+
+
+class Recipe(Model):
+    user = ForeignKey(settings.AUTH_USER_MODEL, on_delete=CASCADE)
+    title = CharField(max_length=255)
+    time_minutes = IntegerField()
+    price = DecimalField(max_digits=5, decimal_places=2)
+    link = CharField(max_length=255, blank=True)
+    ingredients = ManyToManyField("Ingredient")
+    tags = ManyToManyField("Tag")
+
+    @beartype
+    def __str__(self) -> str:
+        return self.title

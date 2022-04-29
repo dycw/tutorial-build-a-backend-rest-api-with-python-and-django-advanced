@@ -50,7 +50,7 @@ class TestPrivateTagsAPI(TestCase):
 
     @beartype
     def test_tags_limited_to_user(self) -> None:
-        tag = Tag.objects.create(user=self.user, name="Comfort Food")
+        Tag.objects.create(user=self.user, name="Comfort Food")
         user2 = cast(UserManager, get_user_model().objects).create_user(
             email="other@example.com", password="password"
         )
@@ -58,7 +58,9 @@ class TestPrivateTagsAPI(TestCase):
         res = cast(Response, self.client.get(TAGS_URL))
         self.assertEqual(res.status_code, HTTP_200_OK)
         self.assertEqual(len(res.data), 1)
-        self.assertEqual(res.data[0]["name"], tag.name)
+        tags = Tag.objects.filter(user=self.user)
+        serializer = TagSerializer(tags, many=True)
+        self.assertEqual(res.data, serializer.data)
 
     @beartype
     def test_create_tag_successful(self) -> None:
