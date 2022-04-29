@@ -2,7 +2,8 @@ from typing import cast
 
 from beartype import beartype
 from core.models import Tag
-from core.models import User
+from core.models import UserManager
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 from recipe.serializers import TagSerializer
@@ -31,7 +32,7 @@ class TestPublicTagsAPI(TestCase):
 class TestPrivateTagsAPI(TestCase):
     @beartype
     def setUp(self) -> None:
-        self.user = User.get_objects().create_user(
+        self.user = cast(UserManager, get_user_model().objects).create_user(
             email="test@example.com", password="password"
         )
         self.client = APIClient()
@@ -50,7 +51,7 @@ class TestPrivateTagsAPI(TestCase):
     @beartype
     def test_tags_limited_to_user(self) -> None:
         tag = Tag.objects.create(user=self.user, name="Comfort Food")
-        user2 = User.get_objects().create_user(
+        user2 = cast(UserManager, get_user_model().objects).create_user(
             email="other@example.com", password="password"
         )
         _ = Tag.objects.create(user=user2, name="Fruity")

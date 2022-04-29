@@ -1,8 +1,10 @@
 from typing import cast
 
 from beartype import beartype
+from core.models import Ingredient
 from core.models import Tag
 from django.db.models.query import QuerySet
+from recipe.serializers import IngredientSerializer
 from recipe.serializers import TagSerializer
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.mixins import CreateModelMixin
@@ -28,3 +30,18 @@ class TagViewSet(GenericViewSet, ListModelMixin, CreateModelMixin):
     @beartype
     def perform_create(self, serializer: TagSerializer) -> None:  # type: ignore
         _ = serializer.save(user=self.request.user)
+
+
+class IngredientViewSet(GenericViewSet, ListModelMixin, CreateModelMixin):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = cast(QuerySet[Ingredient], Ingredient.objects.all())
+    serializer_class = IngredientSerializer
+
+    @beartype
+    def get_queryset(self) -> QuerySet[Ingredient]:
+        return (
+            cast(QuerySet[Ingredient], self.queryset)
+            .filter(user=self.request.user)
+            .order_by("-name")
+        )

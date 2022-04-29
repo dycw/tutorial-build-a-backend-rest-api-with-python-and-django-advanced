@@ -3,6 +3,8 @@ from typing import cast
 
 from beartype import beartype
 from core.models import User
+from core.models import UserManager
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework.response import Response
@@ -19,8 +21,9 @@ TOKEN_URL = reverse("user:token")
 ME_URL = reverse("user:me")
 
 
+@beartype
 def create_user(**params: Any) -> User:
-    return User.get_objects().create_user(**params)
+    return cast(UserManager, get_user_model().objects).create_user(**params)
 
 
 class TestPublicUserAPI(TestCase):
@@ -38,7 +41,7 @@ class TestPublicUserAPI(TestCase):
         }
         res = cast(Response, self.client.post(CREATE_USER_URL, payload))
         self.assertEqual(res.status_code, HTTP_201_CREATED)
-        user = User.get_objects().get(**res.data)
+        user = cast(UserManager, get_user_model().objects).get(**res.data)
         self.assertTrue(user.check_password(password))
         self.assertNotIn(password, res.data)
 
@@ -55,7 +58,11 @@ class TestPublicUserAPI(TestCase):
         payload = {"email": email, "password": "pw", "name": "User name"}
         res = cast(Response, self.client.post(CREATE_USER_URL, payload))
         self.assertEqual(res.status_code, HTTP_400_BAD_REQUEST)
-        self.assertFalse(User.get_objects().filter(email=email).exists())
+        self.assertFalse(
+            cast(UserManager, get_user_model().objects)
+            .filter(email=email)
+            .exists()
+        )
 
     @beartype
     def test_create_token_for_user(self) -> None:

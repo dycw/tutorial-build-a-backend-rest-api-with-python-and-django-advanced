@@ -1,9 +1,11 @@
 from collections import OrderedDict
 from typing import TYPE_CHECKING
 from typing import Any
+from typing import cast
 
 from beartype import beartype
 from core.models import User
+from core.models import UserManager
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy
@@ -30,7 +32,9 @@ class UserSerializer(_ModelSerializerUser):
 
     @beartype
     def create(self, validated_data: dict[str, Any]) -> User:
-        return User.get_objects().create_user(**validated_data)
+        return cast(UserManager, get_user_model().objects).create_user(
+            **validated_data
+        )
 
     @beartype
     def update(self, instance: User, validated_data: dict[str, Any]) -> User:
