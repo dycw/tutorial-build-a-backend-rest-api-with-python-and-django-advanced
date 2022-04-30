@@ -58,8 +58,23 @@ class RecipeViewSet(ModelViewSet):
     serializer_class = RecipeSerializer
 
     @beartype
+    def _params_to_ints(self, qs: str) -> list[int]:
+        return list(map(int, qs.split(",")))
+
+    @beartype
     def get_queryset(self) -> QuerySet:
-        return cast(QuerySet, self.queryset).filter(user=self.request.user)
+        query_set = cast(QuerySet, self.queryset).filter(user=self.request.user)
+        if (tags := self.request.query_params.get("tags")) is not None:
+            query_set = query_set.filter(
+                tags__id__in=self._params_to_ints(tags)
+            )
+        if (
+            ingredients := self.request.query_params.get("ingredients")
+        ) is not None:
+            query_set = query_set.filter(
+                ingredients__id__in=self._params_to_ints(ingredients)
+            )
+        return query_set
 
     @beartype
     def get_serializer_class(self) -> type[Serializer]:
@@ -77,7 +92,7 @@ class RecipeViewSet(ModelViewSet):
     @action(methods=["POST"], detail=True, url_path="upload-image")
     @beartype
     def upload_image(
-        self, request: Request, _pk: str | None = None
+        self, request: Request, pk: str | None = None  # noqa: U100
     ) -> Response:
         recipe = self.get_object()
         serializer = self.get_serializer(recipe, data=request.data)

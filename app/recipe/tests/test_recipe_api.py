@@ -199,6 +199,42 @@ class TestPrivateRecipesAPI(TestCase):
         tags = recipe.tags.all()
         self.assertEqual(len(tags), 0)
 
+    @beartype
+    def test_filter_recipes_by_tags(self) -> None:
+        recipe1 = sample_recipe(user=self.user, title="Thai vegetable curry")
+        recipe2 = sample_recipe(user=self.user, title="Aubergine with tahini")
+        recipe3 = sample_recipe(user=self.user, title="Fish and chips")
+        recipe1.tags.add(tag1 := sample_tag(user=self.user, name="Vegan"))
+        recipe2.tags.add(tag2 := sample_tag(user=self.user, name="Vegetarian"))
+        payload = {"tags": f"{tag1.pk},{tag2.pk}"}
+        res = cast(Response, self.client.get(RECIPES_URL, payload))
+        serializer1 = RecipeSerializer(recipe1)
+        serializer2 = RecipeSerializer(recipe2)
+        serializer3 = RecipeSerializer(recipe3)
+        self.assertIn(serializer1.data, res.data)
+        self.assertIn(serializer2.data, res.data)
+        self.assertNotIn(serializer3.data, res.data)
+
+    @beartype
+    def test_filter_recipes_by_ingredients(self) -> None:
+        recipe1 = sample_recipe(user=self.user, title="Posh beans on toast")
+        recipe2 = sample_recipe(user=self.user, title="Chicken cacciatore")
+        recipe3 = sample_recipe(user=self.user, title="Steak and mushrooms")
+        recipe1.ingredients.add(
+            ingredient1 := sample_ingredient(user=self.user, name="Feta cheese")
+        )
+        recipe2.ingredients.add(
+            ingredient2 := sample_ingredient(user=self.user, name="Chicken")
+        )
+        payload = {"ingredients": f"{ingredient1.pk},{ingredient2.pk}"}
+        res = cast(Response, self.client.get(RECIPES_URL, payload))
+        serializer1 = RecipeSerializer(recipe1)
+        serializer2 = RecipeSerializer(recipe2)
+        serializer3 = RecipeSerializer(recipe3)
+        self.assertIn(serializer1.data, res.data)
+        self.assertIn(serializer2.data, res.data)
+        self.assertNotIn(serializer3.data, res.data)
+
 
 class TestRecipeImageUpload(TestCase):
     @beartype
