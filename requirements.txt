@@ -26,9 +26,9 @@ djangorestframework==3.13.1 \
     --hash=sha256:0c33407ce23acc68eca2a6e46424b008c9c02eceb8cf18581921d0092bc1f2ee \
     --hash=sha256:24c4bf58ed7e85d1fe4ba250ab2da926d263cd57d64b03e8dcef0ac683f8b1aa
     # via -r requirements.in
-hypothesis==6.45.1 \
-    --hash=sha256:9b51fdbf69926d68d9146bcf6c58da9807d4d29cf65f588c0081f1d2bcc1b21e \
-    --hash=sha256:a7bdd028edfb4c3b373a133f7cf5310348ef542e7e159ed274f6db66ab41bdf0
+hypothesis==6.45.3 \
+    --hash=sha256:1079374c4a14c2aa5708ee3c47cf9391c12efcd80446a3c68325aa619106d316 \
+    --hash=sha256:62e32e7a797959025fdfae05b96d5a5b03e08f3637c109716cbcac228cfdbf62
     # via -r requirements.in
 pillow==9.1.0 \
     --hash=sha256:01ce45deec9df310cbbee11104bae1a2a43308dd9c317f99235b6d3080ddd66e \
