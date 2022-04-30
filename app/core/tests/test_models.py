@@ -1,5 +1,4 @@
 from typing import cast
-from unittest.mock import MagicMock
 from unittest.mock import patch
 
 from beartype import beartype
@@ -78,11 +77,10 @@ class TestModel(TestCase):
         )
         self.assertEqual(str(recipe), recipe.title)
 
-    @patch("uuid.uuid4")
     @beartype
-    def test_recipe_file_name_uuid(self, mock_uuid: MagicMock) -> None:
+    def test_recipe_file_name_uuid(self) -> None:
         uuid = "test-uuid"
-        mock_uuid.return_value = uuid
-        file_path = recipe_image_file_path(None, "myimage.jpg")
+        with patch("uuid.uuid4", return_value=uuid):
+            file_path = recipe_image_file_path(None, "myimage.jpg")
         exp_path = f"uploads/recipe/{uuid}.jpg"
         self.assertEqual(file_path, exp_path)

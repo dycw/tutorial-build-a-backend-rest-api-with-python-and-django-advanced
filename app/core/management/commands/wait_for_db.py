@@ -1,4 +1,4 @@
-from time import sleep
+import time  # to be mocked
 from typing import Any
 
 from django.core.management import BaseCommand
@@ -16,5 +16,5 @@ class Command(BaseCommand):
                 db_conn = connections["default"]
             except OperationalError:
                 self.stdout.write("Database unavailable, waiting 1 second...")
-                sleep(1)
+                time.sleep(1)
         self.stdout.write(self.style.SUCCESS("Database available"))
