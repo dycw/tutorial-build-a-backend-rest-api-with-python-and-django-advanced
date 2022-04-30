@@ -488,13 +488,13 @@ types-pyyaml==6.0.7 \
     # via
     #   django-stubs
     #   djangorestframework-stubs
-types-requests==2.27.24 \
-    --hash=sha256:5501ec6bcc164c54a6598e7ee6581827ea0ac0472e9d33b9456d202892f8d94c \
-    --hash=sha256:e1cde99e92d5fb7afa0ee53924b211f4c47639516434d86dc84d53ec84fcfa8a
+types-requests==2.27.25 \
+    --hash=sha256:2444905c89731dbcb6bbcd6d873a04252445df7623917c640e463b2b28d2a708 \
+    --hash=sha256:805ae7e38fd9d157153066dc4381cf585fd34dfa212f2fc1fece248c05aac571
     # via djangorestframework-stubs
-types-urllib3==1.26.13 \
-    --hash=sha256:40f8fb5e8cd7d57e8aefdee3fdd5e930aa1a1bb4179cdadd55226cea588af790 \
-    --hash=sha256:ff7500641824f881b2c7bde4cc57e6c3abf03d1e005bae83aca752e77213a5da
+types-urllib3==1.26.14 \
+    --hash=sha256:2a2578e4b36341ccd240b00fccda9826988ff0589a44ba4a664bbd69ef348d27 \
+    --hash=sha256:5d2388aa76395b1e3999ff789ea5b3283677dad8e9bcf3d9117ba19271fd35d9
     # via types-requests
 typing-extensions==4.2.0 \
     --hash=sha256:6657594ee297170d19f67d55c05852a874e7eb634f4f753dbd667855e07c1708 \
