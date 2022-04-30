@@ -104,7 +104,7 @@ class TestPrivateTagsAPI(TestCase):
         recipe2 = Recipe.objects.create(
             user=self.user, title="Porridge", time_minutes=3, price=2.00
         )
-        recipe1.add(tag)
-        recipe2.add(tag)
+        recipe1.tags.add(tag)
+        recipe2.tags.add(tag)
         res = cast(Response, self.client.get(TAGS_URL, {"assigned_only": 1}))
         self.assertEqual(len(res.data), 1)
